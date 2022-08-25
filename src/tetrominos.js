@@ -72,7 +72,7 @@ export const getRandomTetromino = () => {
 	return TETROMINOS[randTetromino]
 }
 
-const findMinY = (tetromino) => {
+export const findMinY = (tetromino) => {
 	let cols = []
 	for (let row = 0; row < tetromino.nxn; row++) {
 		for (let col = 0; col < tetromino.nxn; col++) {
@@ -84,7 +84,7 @@ const findMinY = (tetromino) => {
 	return Math.min(...cols)
 }
 
-const findMaxY = (tetromino) => {
+export const findMaxY = (tetromino) => {
 	let cols = []
 	for (let row = 0; row < tetromino.nxn; row++) {
 		for (let col = 0; col < tetromino.nxn; col++) {
@@ -96,7 +96,7 @@ const findMaxY = (tetromino) => {
 	return Math.max(...cols)
 }
 
-const findMaxX = (tetromino) => {
+export const findMaxX = (tetromino) => {
 	let max = 0
 	for (let i = 0; i < tetromino.nxn; i++) {
 		for (let row of tetromino.shape[i]) {
@@ -136,17 +136,16 @@ export const getFullLocations = (tetromino, position) => {
 	return locs.map((loc) => ({ x: loc.x + position.x, y: loc.y + position.y }))
 }
 
-export const rotateCounter = (tetromino) => {
+export const rotate = (isCounterClockwise, tetromino) => {
 	const arr = tetromino.shape.map((row) => row.map((col) => col))
 
-	return Array.from(arr[0], (x, col) =>
-		Array.from(arr, (y, row) => arr[row][arr[0].length - col - 1])
-	)
-}
-export const rotate = (tetromino) => {
-	const arr = tetromino.shape.map((row) => row.map((col) => col))
-
-	return Array.from(arr[0], (x, col) =>
-		Array.from(arr, (y, row) => arr[arr.length - row - 1][col])
-	)
+	if (isCounterClockwise) {
+		return Array.from(arr[0], (x, col) =>
+			Array.from(arr, (y, row) => arr[row][arr[0].length - col - 1])
+		)
+	} else {
+		return Array.from(arr[0], (x, col) =>
+			Array.from(arr, (y, row) => arr[arr.length - row - 1][col])
+		)
+	}
 }

@@ -23,3 +23,4 @@ const Square = styled.div`
 export default function Cell(props) {
 	return <Square value={props.value}></Square>
 }
+  
