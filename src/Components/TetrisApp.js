@@ -1,34 +1,73 @@
 import React, { useState, useEffect } from "react"
-import styled from "styled-components"
 import Stage from "./Stage"
 import Dashboard from "./Dashboard"
-import { createArray } from "../helper"
-import { getRandomTetromino } from "../tetrominos"
+import { Container } from "../styles/TetrisAppStyles"
+import { createArray, updateStage } from "../helper"
+import {
+	getRandomTetromino,
+	getMaxMins,
+	getFullLocations,
+	rotateCounter,
+} from "../tetrominos"
 
-const Container = styled.div`
-	min-height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: #222;
-	background-color: #242424;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d8d8d8' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-`
+const COLUMNS = 10
+const ROWS = 23
 
 export default function TetrisApp() {
 	const [player, setPlayer] = useState({
-		position: { x: 0, y: 0 },
-		tetromino: getRandomTetromino().shape,
+		position: { x: 4, y: 3 },
+		tetromino: getRandomTetromino(),
 		collided: false,
 	})
-	const [state, setState] = useState(createArray(20, 10))
+	const [state, setState] = useState(createArray(ROWS, COLUMNS))
+	const [copyStage, setCopyStage] = useState(state)
 
-	useEffect(() => {})
 	const [dropTime, setDropTime] = useState(null)
 	const [gameOver, setGameOver] = useState(false)
+
+	const handleKeyDown = (evt) => {
+		let posX = player.position.x
+		let posY = player.position.y
+		if (["a", "d", "s"].includes(evt.key)) {
+			const maxMins = getMaxMins(player.tetromino)
+			if (evt.key === "a") {
+				posY--
+				if (posY < 0 - maxMins.minY) posY = -maxMins.minY
+			} else if (evt.key === "d") {
+				posY++
+				if (posY + maxMins.maxY > COLUMNS - 1) posY--
+			} else if (evt.key === "s") {
+				posX++
+				if (posX + maxMins.maxX > ROWS - 1) posX--
+			}
+			setPlayer({
+				...player,
+				position: { x: posX, y: posY },
+			})
+		} else if (evt.key === "r") {
+			const newTetro = { ...player.tetromino }
+			newTetro.shape = rotateCounter(newTetro)
+			const maxMins = getMaxMins(newTetro)
+			if (posY < 0 - maxMins.minY) posY = -maxMins.minY
+			if (posY + maxMins.maxY > COLUMNS - 1) posY = COLUMNS - 1 - maxMins.maxY
+			if (posX + maxMins.maxX > ROWS - 1) posX = ROWS - 1 - maxMins.maxX
+			setPlayer({
+				...player,
+				tetromino: newTetro,
+				position: { x: posX, y: posY },
+			})
+		}
+	}
+
+	useEffect(() => {
+		const tetroLocs = getFullLocations(player.tetromino, player.position)
+
+		setCopyStage(updateStage(state, tetroLocs, player.tetromino.num))
+	}, [player])
+
 	return (
-		<Container>
-			<Stage state={state} />
+		<Container onKeyDown={handleKeyDown} tabIndex={0}>
+			<Stage state={copyStage} player={player} />
 			<div>
 				<Dashboard />
 			</div>

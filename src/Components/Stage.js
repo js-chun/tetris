@@ -1,8 +1,9 @@
 import React from "react"
 import styled from "styled-components"
+import Cell from "./Cell"
 
 const StageContainer = styled.div`
-	background-color: #22223b;
+	background-color: #08090a;
 	padding: 10px;
 	border-radius: 5px;
 	height: 700px;
@@ -13,25 +14,22 @@ const Row = styled.div`
 	width: 330px;
 `
 
-const Cell = styled.div`
-	width: 30px;
-	height: 30px;
-	margin: 2px;
-	border-radius: 5px;
-	background-color: #4a4e69;
-`
-
 export default function Stage(props) {
-	const { state } = props
+	const { state, player } = props
+
 	return (
 		<StageContainer>
-			{state.map((col) => (
-				<Row>
-					{col.map((cell) => (
-						<Cell />
-					))}
-				</Row>
-			))}
+			{state.map((row, rowNum) => {
+				if (rowNum >= 3) {
+					return (
+						<Row>
+							{row.map((col, colNum) => (
+								<Cell value={state[rowNum][colNum]} />
+							))}
+						</Row>
+					)
+				}
+			})}
 		</StageContainer>
 	)
 }
