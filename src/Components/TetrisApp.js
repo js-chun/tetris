@@ -2,21 +2,27 @@ import React, { useState, useEffect } from "react"
 import Stage from "./Stage"
 import Dashboard from "./Dashboard"
 import { Container } from "../styles/TetrisAppStyles"
-import { createArray, updateStage } from "../gameHelper"
+import {
+	createArray,
+	updateStage,
+	checkAndRemoveRows,
+} from "../utils/gameHelper"
 import {
 	getRandomTetromino,
 	getMaxMins,
 	getFullLocations,
 	rotate,
-} from "../tetrominos"
-import { canMoveDown, moveHorizontal, moveDown } from "../colliderHelper"
-import { ROWS, COLUMNS } from "../gameVariables"
-import useInterval from "../useInterval"
+} from "../utils/tetrominos"
+import { canMoveDown, moveHorizontal, moveDown } from "../utils/colliderHelper"
+import { ROWS, COLUMNS } from "../utils/gameVariables"
+import useInterval from "../hooks/useInterval"
+
+const initialPc = getRandomTetromino()
 
 export default function TetrisApp() {
 	const [player, setPlayer] = useState({
-		position: { x: 0, y: 0 },
-		tetromino: getRandomTetromino(),
+		position: { x: initialPc.offset, y: 4 },
+		tetromino: initialPc.tetromino,
 	})
 	const [stage, setStage] = useState(createArray(ROWS, COLUMNS))
 	const [copyStage, setCopyStage] = useState(stage)
@@ -25,10 +31,15 @@ export default function TetrisApp() {
 	const [gameOver, setGameOver] = useState(false)
 
 	const getNewPiece = () => {
-		setStage(copyStage)
+		const a = checkAndRemoveRows(
+			copyStage,
+			getFullLocations(player.tetromino, player.position)
+		)
+		setStage(a)
+		const newPiece = getRandomTetromino()
 		setPlayer({
-			position: { x: 4, y: 3 },
-			tetromino: getRandomTetromino(),
+			position: { x: newPiece.offset, y: 4 },
+			tetromino: newPiece.tetromino,
 		})
 	}
 

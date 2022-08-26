@@ -68,8 +68,14 @@ export const TETROMINOS = {
 export const getRandomTetromino = () => {
 	const tetrominos = "IJLOSTZ"
 	const randTetromino =
-		tetrominos[Math.floor(Math.random() * tetrominos.length)]
-	return TETROMINOS[randTetromino]
+		TETROMINOS[tetrominos[Math.floor(Math.random() * tetrominos.length)]]
+	const rotateNums = Math.floor(Math.random() * 3)
+	for (let i = 0; i < rotateNums; i++) {
+		randTetromino.shape = rotate(false, randTetromino)
+	}
+	const { maxX } = getMaxMins(randTetromino)
+	const offset = 3 - maxX
+	return { tetromino: randTetromino, offset }
 }
 
 export const findMinY = (tetromino) => {

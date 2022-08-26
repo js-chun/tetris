@@ -1,4 +1,4 @@
-import TetrisApp from "./Components/TetrisApp"
+import TetrisApp from "./components/TetrisApp"
 
 function App() {
 	return <TetrisApp />

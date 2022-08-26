@@ -20,7 +20,7 @@ export default function Stage(props) {
 	return (
 		<StageContainer>
 			{state.map((row, rowNum) => {
-				if (rowNum >= 3) {
+				if (rowNum >= 4) {
 					return (
 						<Row>
 							{row.map((col, colNum) => (
