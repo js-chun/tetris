@@ -19,12 +19,18 @@ import LeftDashboard from "./LeftDashboard"
 import RightDashboard from "./RightDashboard"
 
 const initialPc = getRandomTetromino()
+const initialNextPcs = [
+	getRandomTetromino(),
+	getRandomTetromino(),
+	getRandomTetromino(),
+]
 
 export default function TetrisApp() {
 	const [player, setPlayer] = useState({
 		position: { x: initialPc.offset, y: 4 },
 		tetromino: initialPc.tetromino,
 	})
+	const [nextPcs, setNextPcs] = useState(initialNextPcs)
 	const [stage, setStage] = useState(createArray(ROWS, COLUMNS))
 	const [copyStage, setCopyStage] = useState(stage)
 
@@ -37,8 +43,13 @@ export default function TetrisApp() {
 			getFullLocations(player.tetromino, player.position)
 		)
 		setStage(changedStage)
-		const newPiece = getRandomTetromino()
+		const nexts = [...nextPcs]
+		const newPiece = nexts.shift()
+		console.log(newPiece)
+		nexts.push(getRandomTetromino())
+
 		if (stage[2].some((col) => col !== 0)) setGameOver(true)
+		setNextPcs(nexts)
 		setPlayer({
 			position: { x: newPiece.offset, y: 4 },
 			tetromino: newPiece.tetromino,
@@ -98,10 +109,10 @@ export default function TetrisApp() {
 	}, [player])
 
 	return (
-		<Container autofocus onKeyDown={handleKeyDown} tabIndex={0}>
+		<Container onKeyDown={handleKeyDown} tabIndex={0}>
 			<LeftDashboard />
-			<Stage state={copyStage} player={player} />
-			<RightDashboard gameOver={gameOver} />
+			<Stage state={copyStage} />
+			<RightDashboard nextPcs={nextPcs} gameOver={gameOver} />
 		</Container>
 	)
 }

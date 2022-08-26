@@ -6,7 +6,7 @@ import Button from "./Button"
 export default function RightDashboard(props) {
 	return (
 		<DbColumn>
-			<NextBoard h={400} />
+			<NextBoard h={450} nextPcs={props.nextPcs} />
 			<Button gameOver={props.gameOver} />
 		</DbColumn>
 	)

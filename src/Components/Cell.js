@@ -18,12 +18,22 @@ const Square = styled.div`
 	margin: 2px;
 	border-radius: 5px;
 	background-color: ${(props) =>
-		props.value ? colors[props.value] : colors[0]};
+		props.inGame
+			? props.value
+				? colors[props.value]
+				: colors[0]
+			: props.value
+			? colors[props.value]
+			: "transparent"};
 	box-shadow: ${(props) =>
-		props.value
+		props.inGame
+			? props.value
+				? `0 0 2px ${colors[props.value]}, 0 0 10px ${colors[props.value]}`
+				: `0 0 2px ${colors[0]}, 0 0 10px ${colors[0]}`
+			: props.value
 			? `0 0 2px ${colors[props.value]}, 0 0 10px ${colors[props.value]}`
-			: `0 0 2px ${colors[0]}, 0 0 10px ${colors[0]}`};
+			: `none`};
 `
 export default function Cell(props) {
-	return <Square value={props.value}></Square>
+	return <Square value={props.value} inGame={props.inGame}></Square>
 }

@@ -15,7 +15,7 @@ const Row = styled.div`
 `
 
 export default function Stage(props) {
-	const { state, player } = props
+	const { state } = props
 
 	return (
 		<StageContainer>
@@ -24,7 +24,7 @@ export default function Stage(props) {
 					return (
 						<Row>
 							{row.map((col, colNum) => (
-								<Cell value={state[rowNum][colNum]} />
+								<Cell value={state[rowNum][colNum]} inGame={true} />
 							))}
 						</Row>
 					)
