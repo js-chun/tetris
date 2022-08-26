@@ -25,8 +25,12 @@ const StartButton = styled.button`
 `
 
 export default function Button(props) {
+	const { gameOver, playClick } = props
+	const handlePlayClick = () => {
+		playClick()
+	}
 	return (
-		<StartButton disabled={!props.gameOver}>
+		<StartButton disabled={!props.gameOver} onClick={handlePlayClick}>
 			{props.gameOver ? "Play" : "Playing"}
 		</StartButton>
 	)

@@ -5,7 +5,7 @@ import Tetromino from "./Tetromino"
 export default function NextBoard(props) {
 	const { nextPcs } = props
 	return (
-		<Board m={props.m} h={props.h}>
+		<Board m={props.m} h={props.h} tr>
 			NEXT
 			{nextPcs.map((nextPc) => (
 				<Tetromino pc={nextPc.tetromino} />

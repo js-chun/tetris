@@ -11,7 +11,7 @@ const TetrominoContainer = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	transform: scale(0.8); ;
+	transform: scale(0.8);
 `
 
 const Row = styled.div`

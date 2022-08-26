@@ -1,6 +1,13 @@
 import React from "react"
-import { Board } from "../styles/DashboardStyles"
+import Tetromino from "./Tetromino"
+import { Board, Container } from "../styles/DashboardStyles"
 
-export default function HoldBoard() {
-	return <Board h={200}>HOLD</Board>
+export default function HoldBoard(props) {
+	const { pc } = props
+	return (
+		<Board h={200} tl bl>
+			HOLD
+			<Container h={180}>{pc ? <Tetromino pc={pc} /> : ""}</Container>
+		</Board>
+	)
 }

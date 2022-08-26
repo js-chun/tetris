@@ -42,9 +42,11 @@ export const checkAndRemoveRows = (updatedStage, changedLocs) => {
 			rowsComplete.push(row)
 		}
 	}
+	let newStage
 	if (rowsComplete.length !== 0) {
-		return removeRows(updatedStage, rowsComplete)
+		newStage = removeRows(updatedStage, rowsComplete)
 	} else {
-		return updatedStage
+		newStage = updatedStage
 	}
+	return { stage: newStage, completeRows: rowsComplete.length }
 }

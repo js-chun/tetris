@@ -19,36 +19,34 @@ import LeftDashboard from "./LeftDashboard"
 import RightDashboard from "./RightDashboard"
 
 const initialPc = getRandomTetromino()
-const initialNextPcs = [
-	getRandomTetromino(),
-	getRandomTetromino(),
-	getRandomTetromino(),
-]
 
 export default function TetrisApp() {
 	const [player, setPlayer] = useState({
 		position: { x: initialPc.offset, y: 4 },
 		tetromino: initialPc.tetromino,
 	})
-	const [nextPcs, setNextPcs] = useState(initialNextPcs)
+	const [holdPc, setHoldPc] = useState(null)
+	const [nextPcs, setNextPcs] = useState([])
 	const [stage, setStage] = useState(createArray(ROWS, COLUMNS))
 	const [copyStage, setCopyStage] = useState(stage)
 
+	const [score, setScore] = useState(0)
 	const [dropTime, setDropTime] = useState(1000)
-	const [gameOver, setGameOver] = useState(false)
+	const [gameOver, setGameOver] = useState(true)
 
 	const getNewPiece = () => {
-		const changedStage = checkAndRemoveRows(
+		const result = checkAndRemoveRows(
 			copyStage,
 			getFullLocations(player.tetromino, player.position)
 		)
-		setStage(changedStage)
+		setStage(result.stage)
+		setScore(score + 5 + 100 * result.completeRows)
+
 		const nexts = [...nextPcs]
 		const newPiece = nexts.shift()
-		console.log(newPiece)
 		nexts.push(getRandomTetromino())
 
-		if (stage[2].some((col) => col !== 0)) setGameOver(true)
+		if (stage[3].some((col) => col !== 0)) setGameOver(true)
 		setNextPcs(nexts)
 		setPlayer({
 			position: { x: newPiece.offset, y: 4 },
@@ -57,62 +55,105 @@ export default function TetrisApp() {
 	}
 
 	const handleKeyDown = (evt) => {
-		if (["a", "d", "s"].includes(evt.key)) {
-			let pos
-			if (evt.key === "a") {
-				pos = moveHorizontal(true, player, stage)
-			}
-			if (evt.key === "d") {
-				pos = moveHorizontal(false, player, stage)
-			}
-			if (evt.key === "s") {
-				pos = moveDown(player, stage)
-			}
-			if (pos)
+		if (!gameOver) {
+			if (evt.key === "g") {
+				const switchPc = holdPc
+				setHoldPc(player.tetromino)
+				if (switchPc) {
+					const { maxX } = getMaxMins(switchPc)
+					const offset = 3 - maxX
+					setPlayer({
+						position: { x: offset, y: 4 },
+						tetromino: switchPc,
+					})
+				} else {
+					const nexts = [...nextPcs]
+					const newPiece = nexts.shift()
+					nexts.push(getRandomTetromino())
+					setPlayer({
+						position: { x: newPiece.offset, y: 4 },
+						tetromino: newPiece.tetromino,
+					})
+				}
+			} else if (["a", "d", "s"].includes(evt.key)) {
+				let pos
+				if (evt.key === "a") {
+					pos = moveHorizontal(true, player, stage)
+				}
+				if (evt.key === "d") {
+					pos = moveHorizontal(false, player, stage)
+				}
+				if (evt.key === "s") {
+					pos = moveDown(player, stage)
+				}
+				if (pos)
+					setPlayer({
+						...player,
+						position: pos,
+					})
+			} else if (["q", "e"].includes(evt.key)) {
+				let posX = player.position.x
+				let posY = player.position.y
+				const newTetro = { ...player.tetromino }
+				if (evt.key === "q") newTetro.shape = rotate(true, newTetro)
+				else if (evt.key === "e") newTetro.shape = rotate(false, newTetro)
+				const maxMins = getMaxMins(newTetro)
+				if (posY < 0 - maxMins.minY) posY = -maxMins.minY
+				if (posY + maxMins.maxY > COLUMNS - 1) posY = COLUMNS - 1 - maxMins.maxY
+				if (posX + maxMins.maxX > ROWS - 1) posX = ROWS - 1 - maxMins.maxX
 				setPlayer({
 					...player,
-					position: pos,
+					tetromino: newTetro,
+					position: { x: posX, y: posY },
 				})
-		} else if (["q", "e"].includes(evt.key)) {
-			let posX = player.position.x
-			let posY = player.position.y
-			const newTetro = { ...player.tetromino }
-			if (evt.key === "q") newTetro.shape = rotate(true, newTetro)
-			else if (evt.key === "e") newTetro.shape = rotate(false, newTetro)
-			const maxMins = getMaxMins(newTetro)
-			if (posY < 0 - maxMins.minY) posY = -maxMins.minY
-			if (posY + maxMins.maxY > COLUMNS - 1) posY = COLUMNS - 1 - maxMins.maxY
-			if (posX + maxMins.maxX > ROWS - 1) posX = ROWS - 1 - maxMins.maxX
+			}
+		}
+	}
+
+	const handlePlayClick = () => {
+		if (gameOver) {
+			setStage(createArray(ROWS, COLUMNS))
+			setHoldPc(null)
+			setGameOver(false)
+			const initialPc = getRandomTetromino()
+			const initialNextPcs = [
+				getRandomTetromino(),
+				getRandomTetromino(),
+				getRandomTetromino(),
+			]
 			setPlayer({
-				...player,
-				tetromino: newTetro,
-				position: { x: posX, y: posY },
+				position: { x: initialPc.offset, y: 4 },
+				tetromino: initialPc.tetromino,
 			})
+			setNextPcs(initialNextPcs)
 		}
 	}
 
 	useInterval(() => {
-		if (canMoveDown(player, stage)) {
-			let pos = moveDown(player, stage)
-			setPlayer({ ...player, position: pos })
-		} else {
-			getNewPiece()
+		if (!gameOver) {
+			if (canMoveDown(player, stage)) {
+				let pos = moveDown(player, stage)
+				setPlayer({ ...player, position: pos })
+			} else {
+				getNewPiece()
+			}
 		}
 	}, dropTime)
 
 	useEffect(() => {
-		if (!canMoveDown(player, stage)) {
-		}
-
 		const tetroLocs = getFullLocations(player.tetromino, player.position)
 		setCopyStage(updateStage(stage, tetroLocs, player.tetromino.num))
 	}, [player])
 
 	return (
 		<Container onKeyDown={handleKeyDown} tabIndex={0}>
-			<LeftDashboard />
+			<LeftDashboard score={score} holdPc={holdPc} />
 			<Stage state={copyStage} />
-			<RightDashboard nextPcs={nextPcs} gameOver={gameOver} />
+			<RightDashboard
+				nextPcs={nextPcs}
+				gameOver={gameOver}
+				playClick={handlePlayClick}
+			/>
 		</Container>
 	)
 }
