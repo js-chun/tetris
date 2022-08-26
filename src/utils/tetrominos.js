@@ -57,8 +57,8 @@ export const TETROMINOS = {
 	Z: {
 		shape: [
 			[1, 1, 0],
-			[0, 1, 0],
 			[0, 1, 1],
+			[0, 0, 0],
 		],
 		num: 7,
 		nxn: 3,

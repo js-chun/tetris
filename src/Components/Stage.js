@@ -3,7 +3,7 @@ import styled from "styled-components"
 import Cell from "./Cell"
 
 const StageContainer = styled.div`
-	background-color: #08090a;
+	background-color: #22223b;
 	padding: 10px;
 	border-radius: 5px;
 	height: 700px;

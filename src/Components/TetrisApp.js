@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import Stage from "./Stage"
-import Dashboard from "./Dashboard"
 import { Container } from "../styles/TetrisAppStyles"
 import {
 	createArray,
@@ -16,6 +15,8 @@ import {
 import { canMoveDown, moveHorizontal, moveDown } from "../utils/colliderHelper"
 import { ROWS, COLUMNS } from "../utils/gameVariables"
 import useInterval from "../hooks/useInterval"
+import LeftDashboard from "./LeftDashboard"
+import RightDashboard from "./RightDashboard"
 
 const initialPc = getRandomTetromino()
 
@@ -31,12 +32,13 @@ export default function TetrisApp() {
 	const [gameOver, setGameOver] = useState(false)
 
 	const getNewPiece = () => {
-		const a = checkAndRemoveRows(
+		const changedStage = checkAndRemoveRows(
 			copyStage,
 			getFullLocations(player.tetromino, player.position)
 		)
-		setStage(a)
+		setStage(changedStage)
 		const newPiece = getRandomTetromino()
+		if (stage[2].some((col) => col !== 0)) setGameOver(true)
 		setPlayer({
 			position: { x: newPiece.offset, y: 4 },
 			tetromino: newPiece.tetromino,
@@ -96,11 +98,10 @@ export default function TetrisApp() {
 	}, [player])
 
 	return (
-		<Container onKeyDown={handleKeyDown} tabIndex={0}>
+		<Container autofocus onKeyDown={handleKeyDown} tabIndex={0}>
+			<LeftDashboard />
 			<Stage state={copyStage} player={player} />
-			<div>
-				<Dashboard />
-			</div>
+			<RightDashboard gameOver={gameOver} />
 		</Container>
 	)
 }

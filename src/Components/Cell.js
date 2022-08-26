@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components"
 
 const colors = {
-	0: "#575a5e",
+	0: "#4a4e69",
 	1: "#ffadad",
 	2: "#ffd6a5",
 	3: "#fdffb6",
@@ -19,8 +19,11 @@ const Square = styled.div`
 	border-radius: 5px;
 	background-color: ${(props) =>
 		props.value ? colors[props.value] : colors[0]};
+	box-shadow: ${(props) =>
+		props.value
+			? `0 0 2px ${colors[props.value]}, 0 0 10px ${colors[props.value]}`
+			: `0 0 2px ${colors[0]}, 0 0 10px ${colors[0]}`};
 `
 export default function Cell(props) {
 	return <Square value={props.value}></Square>
 }
-  
