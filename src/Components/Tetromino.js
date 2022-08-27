@@ -1,7 +1,6 @@
 import React from "react"
 import Cell from "./Cell"
 import styled from "styled-components"
-import { TETROMINOS } from "../utils/tetrominos"
 
 const TetrominoContainer = styled.div`
 	width: 100%;

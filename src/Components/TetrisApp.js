@@ -12,7 +12,12 @@ import {
 	getFullLocations,
 	rotate,
 } from "../utils/tetrominos"
-import { canMoveDown, moveHorizontal, moveDown } from "../utils/colliderHelper"
+import {
+	canMoveDown,
+	moveHorizontal,
+	moveDown,
+	getPredictedLocations,
+} from "../utils/colliderHelper"
 import { ROWS, COLUMNS } from "../utils/gameVariables"
 import useInterval from "../hooks/useInterval"
 import LeftDashboard from "./LeftDashboard"
@@ -142,13 +147,20 @@ export default function TetrisApp() {
 
 	useEffect(() => {
 		const tetroLocs = getFullLocations(player.tetromino, player.position)
-		setCopyStage(updateStage(stage, tetroLocs, player.tetromino.num))
+		setCopyStage(
+			updateStage(
+				stage,
+				tetroLocs,
+				getPredictedLocations(player, stage),
+				player.tetromino.num
+			)
+		)
 	}, [player])
 
 	return (
 		<Container onKeyDown={handleKeyDown} tabIndex={0}>
 			<LeftDashboard score={score} holdPc={holdPc} />
-			<Stage state={copyStage} />
+			<Stage state={copyStage} gameOver={gameOver} />
 			<RightDashboard
 				nextPcs={nextPcs}
 				gameOver={gameOver}

@@ -77,3 +77,29 @@ export const moveDown = (player, stage) => {
 	}
 	return { x: posX, y: player.position.y }
 }
+
+const getLowest = (player, stage) => {
+	let lowestRow = player.position.x
+	for (let r = player.position.x; r < ROWS - 1; r++) {
+		const canDrop = canMoveDown(
+			{
+				tetromino: player.tetromino,
+				position: { x: r, y: player.position.y },
+			},
+			stage
+		)
+		if (canDrop) {
+			lowestRow = r + 1
+		} else {
+			break
+		}
+	}
+	return lowestRow
+}
+
+export const getPredictedLocations = (player, stage) => {
+	const lowestRow = getLowest(player, stage)
+	const predictedPos = { x: lowestRow, y: player.position.y }
+	console.log(predictedPos)
+	return getFullLocations(player.tetromino, predictedPos)
+}

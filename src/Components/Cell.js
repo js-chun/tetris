@@ -10,6 +10,7 @@ const colors = {
 	5: "#9bf6ff",
 	6: "#a0c4ff",
 	7: "#bdb2ff",
+	10: "#4a4e69",
 }
 
 const Square = styled.div`
@@ -17,6 +18,7 @@ const Square = styled.div`
 	height: 30px;
 	margin: 2px;
 	border-radius: 5px;
+	box-sizing: border-box;
 	background-color: ${(props) =>
 		props.inGame
 			? props.value
@@ -33,7 +35,14 @@ const Square = styled.div`
 			: props.value
 			? `0 0 2px ${colors[props.value]}, 0 0 10px ${colors[props.value]}`
 			: `none`};
+	border: ${(props) =>
+		!props.gameOver
+			? props.value === 10
+				? "3px #f2e9e4 solid"
+				: "none"
+			: "none"};
 `
 export default function Cell(props) {
-	return <Square value={props.value} inGame={props.inGame}></Square>
+	const { value, inGame, gameOver } = props
+	return <Square value={value} inGame={inGame} gameOver={gameOver}></Square>
 }

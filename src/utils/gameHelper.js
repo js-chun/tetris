@@ -12,8 +12,11 @@ export const getCopyOfStage = (stageToCopy) => {
 	})
 }
 
-export const updateStage = (staticStage, locations, num) => {
+export const updateStage = (staticStage, locations, predictedLocs, num) => {
 	const result = getCopyOfStage(staticStage)
+	predictedLocs.forEach((pLoc) => {
+		result[pLoc.x][pLoc.y] = 10
+	})
 	locations.forEach((loc) => {
 		result[loc.x][loc.y] = num
 	})

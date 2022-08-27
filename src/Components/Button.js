@@ -11,8 +11,10 @@ const StartButton = styled.button`
 	color: #4a4e69;
 	padding: 1rem;
 	border-bottom-right-radius: 1rem;
+	box-shadow: 0 0 2px #f2e9e4, 0 0 10px #f2e9e4;
 	&:hover {
-		box-shadow: 0 0 2px #f2e9e4, 0 0 10px #f2e9e4;
+		background-color: white;
+		box-shadow: 0 0 2px white, 0 0 10px white;
 	}
 	&:disabled {
 		background-color: #9a8c98;
