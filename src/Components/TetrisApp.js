@@ -16,6 +16,7 @@ import {
 	canMoveDown,
 	moveHorizontal,
 	moveDown,
+	getLowest,
 	getPredictedLocations,
 } from "../utils/colliderHelper"
 import { ROWS, COLUMNS } from "../utils/gameVariables"
@@ -61,7 +62,12 @@ export default function TetrisApp() {
 
 	const handleKeyDown = (evt) => {
 		if (!gameOver) {
-			if (evt.key === "g") {
+			if (evt.code === "Space") {
+				const lowestPos = { x: getLowest(player, stage), y: player.position.y }
+				setPlayer({ ...player, position: lowestPos }, () => {
+					getNewPiece()
+				})
+			} else if (evt.key === "g") {
 				const switchPc = holdPc
 				setHoldPc(player.tetromino)
 				if (switchPc) {
