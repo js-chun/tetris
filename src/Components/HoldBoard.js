@@ -7,7 +7,7 @@ export default function HoldBoard(props) {
 	return (
 		<Board h={200} tl bl>
 			HOLD
-			<Container h={180}>{pc ? <Tetromino pc={pc} /> : ""}</Container>
+			<Container h={180}>{pc ? <Tetromino pc={pc} /> : "No Piece"}</Container>
 		</Board>
 	)
 }

@@ -1,6 +1,7 @@
 import React from "react"
-import { DbColumn, Board } from "../styles/DashboardStyles"
+import { DbColumn } from "../styles/DashboardStyles"
 import NextBoard from "./NextBoard"
+import AnimationBoard from "./AnimationBoard"
 import Button from "./Button"
 
 export default function RightDashboard(props) {
@@ -9,7 +10,7 @@ export default function RightDashboard(props) {
 		<DbColumn>
 			<NextBoard h={450} nextPcs={nextPcs} />
 			<Button gameOver={gameOver} playClick={playClick} />
-			<Board m={5} h={100} tr br></Board>
+			<AnimationBoard gameOver={gameOver} />
 		</DbColumn>
 	)
 }
