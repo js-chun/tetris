@@ -40,6 +40,18 @@ export default function TetrisApp() {
 	const [dropTime, setDropTime] = useState(1000)
 	const [gameOver, setGameOver] = useState(true)
 
+	const playAudio = (audioClass, volume = 1) => {
+		const audioEl = document.getElementsByClassName(audioClass)[0]
+		audioEl.volume = volume
+		audioEl.play()
+	}
+
+	const stopAudio = (audioClass) => {
+		const audioEl = document.getElementsByClassName(audioClass)[0]
+		audioEl.pause()
+		audioEl.currentTime = 0
+	}
+
 	const getNewPiece = () => {
 		const result = checkAndRemoveRows(
 			copyStage,
@@ -52,7 +64,11 @@ export default function TetrisApp() {
 		const newPiece = nexts.shift()
 		nexts.push(getRandomTetromino())
 
-		if (stage[3].some((col) => col !== 0)) setGameOver(true)
+		if (stage[3].some((col) => col !== 0)) {
+			stopAudio("audio-bg")
+			playAudio("audio-gameover", 0.3)
+			setGameOver(true)
+		}
 		setNextPcs(nexts)
 		setPlayer({
 			position: { x: newPiece.offset, y: 4 },
@@ -67,6 +83,7 @@ export default function TetrisApp() {
 				setPlayer({ ...player, position: lowestPos }, () => {
 					getNewPiece()
 				})
+				playAudio("audio-fall", 0.2)
 			} else if (evt.key === "g") {
 				const switchPc = holdPc
 				setHoldPc(player.tetromino)
@@ -88,6 +105,7 @@ export default function TetrisApp() {
 				}
 			} else if (["a", "d", "s"].includes(evt.key)) {
 				let pos
+				playAudio("audio-move", 0.2)
 				if (evt.key === "a") {
 					pos = moveHorizontal(true, player, stage)
 				}
@@ -103,6 +121,7 @@ export default function TetrisApp() {
 						position: pos,
 					})
 			} else if (["q", "e"].includes(evt.key)) {
+				playAudio("audio-move", 0.2)
 				let posX = player.position.x
 				let posY = player.position.y
 				const newTetro = { ...player.tetromino }
@@ -123,6 +142,7 @@ export default function TetrisApp() {
 
 	const handlePlayClick = () => {
 		if (gameOver) {
+			playAudio("audio-bg", 0.1)
 			setStage(createArray(ROWS, COLUMNS))
 			setHoldPc(null)
 			setGameOver(false)
@@ -165,6 +185,27 @@ export default function TetrisApp() {
 
 	return (
 		<Container onKeyDown={handleKeyDown} tabIndex={0}>
+			<audio className="audio-fall">
+				<source
+					src={`${process.env.PUBLIC_URL}/audio/fall.wav`}
+					type="audio/wav"
+				/>
+			</audio>
+			<audio className="audio-move">
+				<source
+					src={`${process.env.PUBLIC_URL}/audio/move.wav`}
+					type="audio/wav"
+				/>
+			</audio>
+			<audio className="audio-gameover">
+				<source
+					src={`${process.env.PUBLIC_URL}/audio/GameOver.wav`}
+					type="audio/wav"
+				/>
+			</audio>
+			<audio className="audio-bg" loop={true}>
+				<source src={`${process.env.PUBLIC_URL}/bg.ogg`} type="audio/ogg" />
+			</audio>
 			<LeftDashboard score={score} holdPc={holdPc} />
 			<Stage state={copyStage} gameOver={gameOver} />
 			<RightDashboard
