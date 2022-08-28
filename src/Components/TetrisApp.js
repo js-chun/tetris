@@ -42,8 +42,10 @@ export default function TetrisApp() {
 	const [numPieces, setNumPieces] = useState(0)
 	const [dropTime, setDropTime] = useState(1000)
 	const [gameOver, setGameOver] = useState(true)
+	const [placedDown, setPlacedDown] = useState(false)
 
 	const getNewPiece = () => {
+		setPlacedDown(false)
 		const result = checkAndRemoveRows(
 			copyStage,
 			getFullLocations(player.tetromino, player.position)
@@ -74,9 +76,7 @@ export default function TetrisApp() {
 		if (!gameOver) {
 			if (evt.code === "Space") {
 				const lowestPos = { x: getLowest(player, stage), y: player.position.y }
-				setPlayer({ ...player, position: lowestPos }, () => {
-					getNewPiece()
-				})
+				setPlayer({ ...player, position: lowestPos })
 				playAudio("audio-fall", 0.2)
 			} else if (evt.key === "g") {
 				const switchPc = holdPc
@@ -151,7 +151,7 @@ export default function TetrisApp() {
 				let pos = moveDown(player, stage)
 				setPlayer({ ...player, position: pos })
 			} else {
-				getNewPiece()
+				setPlacedDown(true)
 			}
 		}
 	}, dropTime)
@@ -176,6 +176,12 @@ export default function TetrisApp() {
 			}
 		}
 	}, [numPieces])
+
+	useEffect(() => {
+		if (placedDown) {
+			getNewPiece()
+		}
+	}, [placedDown])
 
 	return (
 		<Container onKeyDown={handleKeyDown} tabIndex={0}>
