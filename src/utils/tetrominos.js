@@ -1,3 +1,5 @@
+import { rotate } from "./colliderHelper"
+
 export const TETROMINOS = {
 	0: { shape: [[0]] },
 	I: {
@@ -140,18 +142,4 @@ export const getFlatLocations = (tetromino) => {
 export const getFullLocations = (tetromino, position) => {
 	const locs = getFlatLocations(tetromino)
 	return locs.map((loc) => ({ x: loc.x + position.x, y: loc.y + position.y }))
-}
-
-export const rotate = (isCounterClockwise, tetromino) => {
-	const arr = tetromino.shape.map((row) => row.map((col) => col))
-
-	if (isCounterClockwise) {
-		return Array.from(arr[0], (x, col) =>
-			Array.from(arr, (y, row) => arr[row][arr[0].length - col - 1])
-		)
-	} else {
-		return Array.from(arr[0], (x, col) =>
-			Array.from(arr, (y, row) => arr[arr.length - row - 1][col])
-		)
-	}
 }

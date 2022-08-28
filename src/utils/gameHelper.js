@@ -1,3 +1,5 @@
+import { SCORE } from "./gameVariables"
+
 export const createArray = (rows, cols) => {
 	const arr = []
 	for (let x = 0; x < rows; x++) {
@@ -52,4 +54,15 @@ export const checkAndRemoveRows = (updatedStage, changedLocs) => {
 		newStage = updatedStage
 	}
 	return { stage: newStage, completeRows: rowsComplete.length }
+}
+
+export const calculateScoreGain = (numOfLines) => {
+	if (numOfLines > 0) {
+		return Math.floor(
+			(SCORE.one_piece + SCORE.one_line * numOfLines) *
+				SCORE.multiplier[numOfLines]
+		)
+	} else {
+		return SCORE.one_piece
+	}
 }

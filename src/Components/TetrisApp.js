@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react"
 import Stage from "./Stage"
+import LeftDashboard from "./LeftDashboard"
+import RightDashboard from "./RightDashboard"
 import { Container } from "../styles/TetrisAppStyles"
 import {
 	createArray,
 	updateStage,
 	checkAndRemoveRows,
+	calculateScoreGain,
 } from "../utils/gameHelper"
 import {
 	getRandomTetromino,
 	getMaxMins,
 	getFullLocations,
-	rotate,
 } from "../utils/tetrominos"
 import {
 	canMoveDown,
@@ -18,11 +20,11 @@ import {
 	moveDown,
 	getLowest,
 	getPredictedLocations,
+	getPossibleRotation,
 } from "../utils/colliderHelper"
 import { ROWS, COLUMNS } from "../utils/gameVariables"
 import useInterval from "../hooks/useInterval"
-import LeftDashboard from "./LeftDashboard"
-import RightDashboard from "./RightDashboard"
+import { playAudio, stopAudio } from "../utils/audioPlayer"
 
 const initialPc = getRandomTetromino()
 
@@ -37,20 +39,9 @@ export default function TetrisApp() {
 	const [copyStage, setCopyStage] = useState(stage)
 
 	const [score, setScore] = useState(0)
+	const [numPieces, setNumPieces] = useState(0)
 	const [dropTime, setDropTime] = useState(1000)
 	const [gameOver, setGameOver] = useState(true)
-
-	const playAudio = (audioClass, volume = 1) => {
-		const audioEl = document.getElementsByClassName(audioClass)[0]
-		audioEl.volume = volume
-		audioEl.play()
-	}
-
-	const stopAudio = (audioClass) => {
-		const audioEl = document.getElementsByClassName(audioClass)[0]
-		audioEl.pause()
-		audioEl.currentTime = 0
-	}
 
 	const getNewPiece = () => {
 		const result = checkAndRemoveRows(
@@ -58,7 +49,7 @@ export default function TetrisApp() {
 			getFullLocations(player.tetromino, player.position)
 		)
 		setStage(result.stage)
-		setScore(score + 5 + 100 * result.completeRows)
+		setScore(score + calculateScoreGain(result.completeRows))
 
 		const nexts = [...nextPcs]
 		const newPiece = nexts.shift()
@@ -69,6 +60,9 @@ export default function TetrisApp() {
 			playAudio("audio-gameover", 0.3)
 			setGameOver(true)
 		}
+
+		setNumPieces(numPieces + 1)
+
 		setNextPcs(nexts)
 		setPlayer({
 			position: { x: newPiece.offset, y: 4 },
@@ -122,20 +116,10 @@ export default function TetrisApp() {
 					})
 			} else if (["q", "e"].includes(evt.key)) {
 				playAudio("audio-move", 0.2)
-				let posX = player.position.x
-				let posY = player.position.y
-				const newTetro = { ...player.tetromino }
-				if (evt.key === "q") newTetro.shape = rotate(true, newTetro)
-				else if (evt.key === "e") newTetro.shape = rotate(false, newTetro)
-				const maxMins = getMaxMins(newTetro)
-				if (posY < 0 - maxMins.minY) posY = -maxMins.minY
-				if (posY + maxMins.maxY > COLUMNS - 1) posY = COLUMNS - 1 - maxMins.maxY
-				if (posX + maxMins.maxX > ROWS - 1) posX = ROWS - 1 - maxMins.maxX
-				setPlayer({
-					...player,
-					tetromino: newTetro,
-					position: { x: posX, y: posY },
-				})
+				let counterClockwise
+				if (evt.key === "q") counterClockwise = true
+				else counterClockwise = false
+				setPlayer(getPossibleRotation(counterClockwise, player, stage))
 			}
 		}
 	}
@@ -152,6 +136,7 @@ export default function TetrisApp() {
 				getRandomTetromino(),
 				getRandomTetromino(),
 			]
+			setNumPieces(1)
 			setPlayer({
 				position: { x: initialPc.offset, y: 4 },
 				tetromino: initialPc.tetromino,
@@ -183,6 +168,15 @@ export default function TetrisApp() {
 		)
 	}, [player])
 
+	useEffect(() => {
+		if (numPieces % 10 === 0 && !gameOver) {
+			const newDropTime = Math.floor(dropTime * 0.95)
+			if (newDropTime >= 100) {
+				setDropTime(newDropTime)
+			}
+		}
+	}, [numPieces])
+
 	return (
 		<Container onKeyDown={handleKeyDown} tabIndex={0}>
 			<audio className="audio-fall">
@@ -204,7 +198,10 @@ export default function TetrisApp() {
 				/>
 			</audio>
 			<audio className="audio-bg" loop={true}>
-				<source src={`${process.env.PUBLIC_URL}/bg.ogg`} type="audio/ogg" />
+				<source
+					src={`${process.env.PUBLIC_URL}/audio/bg.ogg`}
+					type="audio/ogg"
+				/>
 			</audio>
 			<LeftDashboard score={score} holdPc={holdPc} />
 			<Stage state={copyStage} gameOver={gameOver} />
