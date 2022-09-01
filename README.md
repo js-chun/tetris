@@ -1,3 +1,17 @@
+# Tetris
+
+Tetris game created as a web app using React and styled components. Covered Javascript events, useEffect(), useInterval() hook and added SFX and BGM.
+
+## Controls
+
+Space - Hard Drop
+S - Soft Drop
+A - Move Left
+D - Move Right
+G - Hold
+Q - Rotate Counter-Clockwise
+E - Rotate Clockwise
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
