@@ -4,10 +4,10 @@ Tetris game created as a web app using React and styled components. Covered Java
 
 ## Controls
 
-Space - Hard Drop
-S - Soft Drop
-A - Move Left
-D - Move Right
-G - Hold
-Q - Rotate Counter-Clockwise
-E - Rotate Clockwise
+- Space - Hard Drop
+- S - Soft Drop
+- A - Move Left
+- D - Move Right
+- G - Hold
+- Q - Rotate Counter-Clockwise
+- E - Rotate Clockwise
